@@ -6,6 +6,8 @@
   <title>Acuerdo de Prestación de Servicios — Navigy</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>emailjs.init('k6s6knvqnIUYiHOgZ');</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -659,7 +661,7 @@
   </footer>
 
   <!-- SUBMIT -->
-  <div style="margin-top:24px;text-align:center;">
+  <div id="submit-wrap" style="margin-top:24px;text-align:center;">
     <button id="btn-enviar" onclick="enviarContrato()" style="
       font-family:'Plus Jakarta Sans',sans-serif;
       font-size:14px;font-weight:700;
@@ -734,26 +736,58 @@
   initCanvas('canvas-cliente', 'hint-cliente');
 
   async function enviarContrato() {
-    const btn = document.getElementById('btn-enviar');
-    const msg = document.getElementById('msg-envio');
+    const btn  = document.getElementById('btn-enviar');
+    const msg  = document.getElementById('msg-envio');
+    const wrap = document.getElementById('submit-wrap');
 
     btn.disabled = true;
     btn.style.background = '#4A8FD9';
-    btn.textContent = 'Enviando…';
+    btn.textContent = 'Generando PDF…';
     msg.textContent = '';
 
-    const params = {
-      cliente_name:  document.getElementById('input-cliente-nombre').value,
-      fecha_telmo:   document.getElementById('fecha-telmo').value,
-      fecha_manuel:  document.getElementById('fecha-manuel').value,
-      fecha_cliente: document.getElementById('fecha-cliente').value,
-      sig_telmo:     document.getElementById('canvas-telmo').toDataURL('image/png'),
-      sig_manuel:    document.getElementById('canvas-manuel').toDataURL('image/png'),
-      sig_cliente:   document.getElementById('canvas-cliente').toDataURL('image/png'),
-    };
-
     try {
-      await emailjs.send('service_huh7zrb', 'template_czeyubo', params);
+      // Ocultar botón para que no salga en el PDF
+      wrap.style.display = 'none';
+
+      const page = document.querySelector('.page');
+      const canvas = await html2canvas(page, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        scrollY: -window.scrollY,
+        windowWidth: page.scrollWidth,
+        windowHeight: page.scrollHeight,
+      });
+
+      wrap.style.display = 'block';
+
+      // Generar PDF multipágina
+      const { jsPDF } = window.jspdf;
+      const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdfW  = pdf.internal.pageSize.getWidth();
+      const pdfH  = pdf.internal.pageSize.getHeight();
+      const imgW  = pdfW;
+      const imgH  = (canvas.height * pdfW) / canvas.width;
+      const imgData = canvas.toDataURL('image/jpeg', 0.85);
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
+      let remaining = imgH - pdfH;
+      while (remaining > 0) {
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, -(imgH - remaining), imgW, imgH);
+        remaining -= pdfH;
+      }
+
+      btn.textContent = 'Enviando…';
+
+      const clienteName   = document.getElementById('input-cliente-nombre').value || 'Cliente';
+      const fechaCliente  = document.getElementById('fecha-cliente').value;
+
+      await emailjs.send('service_huh7zrb', 'template_czeyubo', {
+        cliente_name:   clienteName,
+        fecha_cliente:  fechaCliente,
+        pdf_attachment: pdf.output('datauristring'),
+      });
 
       btn.textContent = '✓ Contrato enviado';
       btn.style.background = '#1DAA72';
@@ -761,6 +795,7 @@
       msg.textContent = 'El contrato firmado ha sido enviado a tu correo.';
     } catch (err) {
       console.error(err);
+      wrap.style.display = 'block';
       btn.disabled = false;
       btn.style.background = '#E03B3B';
       btn.textContent = 'Error — volver a intentar';
