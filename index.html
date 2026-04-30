@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acuerdo de Prestación de Servicios — Navigy</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Inter:wght@400;500&family=Caveat:wght@600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -457,7 +459,9 @@
         <span>He leído y acepto todas las condiciones del presente Acuerdo de Prestación de Servicios de Marketing Digital y Software.</span>
       </label>
 
-      <div class="submit-wrap">
+      <input type="hidden" id="enlace-contrato" name="Enlace del contrato (PDF)" />
+
+      <div class="submit-wrap" id="submit-wrap">
         <button type="submit" class="btn-submit" id="btn-enviar">Firmar y enviar contrato</button>
         <div class="msg-envio" id="msg-envio"></div>
       </div>
@@ -475,32 +479,84 @@
 <script>
   document.getElementById('contrato-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const btn = document.getElementById('btn-enviar');
-    const msg = document.getElementById('msg-envio');
+    const form  = this;
+    const btn   = document.getElementById('btn-enviar');
+    const msg   = document.getElementById('msg-envio');
+    const wrap  = document.getElementById('submit-wrap');
 
     btn.disabled = true;
-    btn.textContent = 'Enviando…';
     msg.textContent = '';
 
     try {
+      // 1 — Generar PDF del contrato completo
+      btn.textContent = 'Generando PDF…';
+      wrap.style.visibility = 'hidden';
+
+      const page   = document.querySelector('.page');
+      const canvas = await html2canvas(page, {
+        scale: 2, useCORS: true, logging: false,
+        scrollY: -window.scrollY,
+        windowWidth: page.scrollWidth,
+        windowHeight: page.scrollHeight,
+      });
+
+      wrap.style.visibility = 'visible';
+
+      const { jsPDF } = window.jspdf;
+      const pdf  = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pdfW) / canvas.width;
+      const img  = canvas.toDataURL('image/jpeg', 0.88);
+
+      pdf.addImage(img, 'JPEG', 0, 0, pdfW, imgH);
+      let left = imgH - pdfH;
+      while (left > 0) {
+        pdf.addPage();
+        pdf.addImage(img, 'JPEG', 0, -(imgH - left), pdfW, imgH);
+        left -= pdfH;
+      }
+
+      // 2 — Subir PDF a GoFile (host gratuito, sin cuenta)
+      btn.textContent = 'Subiendo contrato…';
+
+      const clientName = (form.querySelector('[name="nombre_cliente"]').value || 'cliente')
+        .replace(/\s+/g, '-').toLowerCase();
+      const filename   = `contrato-navigy-${clientName}.pdf`;
+      const pdfBlob    = pdf.output('blob');
+
+      const { data: { server } } = await fetch('https://api.gofile.io/getServer').then(r => r.json());
+
+      const upload = new FormData();
+      upload.append('file', pdfBlob, filename);
+      const { data } = await fetch(`https://${server}.gofile.io/uploadFile`, {
+        method: 'POST', body: upload
+      }).then(r => r.json());
+
+      document.getElementById('enlace-contrato').value = `https://gofile.io/d/${data.code}`;
+
+      // 3 — Enviar a Formspree con el link incluido
+      btn.textContent = 'Enviando…';
+
       const res = await fetch('https://formspree.io/f/xojrqjbw', {
         method: 'POST',
-        body: new FormData(this),
+        body: new FormData(form),
         headers: { 'Accept': 'application/json' }
       });
 
-      if (res.ok) {
-        btn.textContent = '✓ Contrato enviado';
-        btn.style.background = '#1DAA72';
-        msg.style.color = '#1DAA72';
-        msg.textContent = 'El contrato ha sido firmado y enviado correctamente.';
-      } else {
-        throw new Error();
-      }
-    } catch {
+      if (!res.ok) throw new Error();
+
+      btn.textContent = '✓ Contrato firmado y enviado';
+      btn.style.background = '#1DAA72';
+      msg.style.color = '#1DAA72';
+      msg.textContent = 'El contrato ha sido firmado. Recibirás el enlace de descarga en tu correo.';
+
+    } catch (err) {
+      console.error(err);
+      wrap.style.visibility = 'visible';
       btn.disabled = false;
-      btn.textContent = 'Error — volver a intentar';
       btn.style.background = '#E03B3B';
+      btn.textContent = 'Error — volver a intentar';
       msg.style.color = '#E03B3B';
       msg.textContent = 'No se pudo enviar. Comprueba la conexión e inténtalo de nuevo.';
     }
