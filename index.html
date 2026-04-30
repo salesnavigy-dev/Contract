@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acuerdo de Prestación de Servicios — Navigy</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>emailjs.init('k6s6knvqnIUYiHOgZ');</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -740,30 +742,25 @@
     btn.textContent = 'Enviando…';
     msg.textContent = '';
 
-    const payload = {
-      clienteName:  document.getElementById('input-cliente-nombre').value,
-      fechaTelmo:   document.getElementById('fecha-telmo').value,
-      fechaManuel:  document.getElementById('fecha-manuel').value,
-      fechaCliente: document.getElementById('fecha-cliente').value,
-      sigTelmo:     document.getElementById('canvas-telmo').toDataURL('image/png'),
-      sigManuel:    document.getElementById('canvas-manuel').toDataURL('image/png'),
-      sigCliente:   document.getElementById('canvas-cliente').toDataURL('image/png'),
+    const params = {
+      cliente_name:  document.getElementById('input-cliente-nombre').value,
+      fecha_telmo:   document.getElementById('fecha-telmo').value,
+      fecha_manuel:  document.getElementById('fecha-manuel').value,
+      fecha_cliente: document.getElementById('fecha-cliente').value,
+      sig_telmo:     document.getElementById('canvas-telmo').toDataURL('image/png'),
+      sig_manuel:    document.getElementById('canvas-manuel').toDataURL('image/png'),
+      sig_cliente:   document.getElementById('canvas-cliente').toDataURL('image/png'),
     };
 
     try {
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error();
+      await emailjs.send('service_huh7zrb', 'template_czeyubo', params);
 
       btn.textContent = '✓ Contrato enviado';
       btn.style.background = '#1DAA72';
       msg.style.color = '#1DAA72';
       msg.textContent = 'El contrato firmado ha sido enviado a tu correo.';
-    } catch {
+    } catch (err) {
+      console.error(err);
       btn.disabled = false;
       btn.style.background = '#E03B3B';
       btn.textContent = 'Error — volver a intentar';
