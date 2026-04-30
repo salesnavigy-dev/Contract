@@ -4,17 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acuerdo de Prestación de Servicios — Navigy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>emailjs.init('k6s6knvqnIUYiHOgZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Inter:wght@400;500&family=Caveat:wght@600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --blue:    #1769C2;
-      --sky:     #4A8FD9;
       --ocean:   #0F4F96;
       --mist:    #E8F1FB;
       --ink:     #0D0F14;
@@ -23,6 +18,8 @@
       --line:    #E2E6EF;
       --surface: #F5F6F9;
       --white:   #FFFFFF;
+      --success: #1DAA72;
+      --error:   #E03B3B;
     }
 
     body {
@@ -33,14 +30,9 @@
       background: var(--white);
       max-width: 210mm;
       margin: 0 auto;
-      padding: 0;
     }
 
-    .page {
-      padding: 16mm 18mm 20mm;
-      min-height: 297mm;
-      position: relative;
-    }
+    .page { padding: 16mm 18mm 20mm; }
 
     /* ── Header ── */
     .header {
@@ -52,321 +44,178 @@
       margin-bottom: 28px;
     }
 
-    .logo-img {
-      height: 32px;
-      width: auto;
-      display: block;
-    }
+    .logo-img { height: 32px; width: auto; display: block; }
 
     .doc-meta { text-align: right; }
-
-    .doc-meta .doc-type {
+    .doc-type {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 9pt;
-      font-weight: 600;
+      font-size: 9pt; font-weight: 600;
       color: var(--blue);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      text-transform: uppercase; letter-spacing: 0.08em;
     }
-
-    .doc-meta .doc-date {
-      font-size: 8.5pt;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .doc-date { font-size: 8.5pt; color: var(--muted); margin-top: 2px; }
 
     /* ── Title ── */
     .doc-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 18pt;
-      font-weight: 700;
-      color: var(--ink);
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-bottom: 6px;
+      font-size: 18pt; font-weight: 700;
+      color: var(--ink); letter-spacing: -0.02em;
+      line-height: 1.2; margin-bottom: 6px;
     }
-
-    .doc-subtitle {
-      font-size: 10pt;
-      color: var(--slate);
-      margin-bottom: 26px;
-    }
+    .doc-subtitle { font-size: 10pt; color: var(--slate); margin-bottom: 26px; }
 
     /* ── Parties card ── */
     .parties-card {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 12px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      margin-bottom: 28px;
-      overflow: hidden;
+      display: grid; grid-template-columns: 1fr 1fr;
+      margin-bottom: 28px; overflow: hidden;
     }
-
     .party-block { padding: 16px 20px; }
     .party-block:first-child { border-right: 1px solid var(--line); }
-
     .party-label {
-      font-size: 7.5pt;
-      font-weight: 600;
-      color: var(--blue);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
+      font-size: 7.5pt; font-weight: 600; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
     }
-
     .party-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 11pt;
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 2px;
+      font-size: 11pt; font-weight: 700; color: var(--ink); margin-bottom: 2px;
     }
-
     .party-detail { font-size: 9pt; color: var(--slate); }
 
     /* ── Sections ── */
     .section { margin-bottom: 20px; }
-
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
+    .section-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
     .section-number {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 8pt;
-      font-weight: 700;
-      color: var(--white);
-      background: var(--blue);
-      border-radius: 4px;
-      padding: 2px 7px;
-      flex-shrink: 0;
-      letter-spacing: 0.03em;
+      font-size: 8pt; font-weight: 700; color: var(--white);
+      background: var(--blue); border-radius: 4px;
+      padding: 2px 7px; flex-shrink: 0; letter-spacing: 0.03em;
     }
-
     .section-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 11pt;
-      font-weight: 700;
-      color: var(--ink);
-      letter-spacing: -0.01em;
+      font-size: 11pt; font-weight: 700; color: var(--ink); letter-spacing: -0.01em;
     }
-
-    .section-body {
-      padding-left: 32px;
-      color: var(--slate);
-      font-size: 10pt;
-    }
-
+    .section-body { padding-left: 32px; color: var(--slate); font-size: 10pt; }
     .section-body p { margin-bottom: 5px; }
-
-    .section-body ul {
-      list-style: none;
-      margin: 4px 0 6px;
-      padding: 0;
-    }
-
-    .section-body ul li {
-      padding-left: 16px;
-      position: relative;
-      margin-bottom: 3px;
-      font-size: 10pt;
-    }
-
+    .section-body ul { list-style: none; margin: 4px 0 6px; padding: 0; }
+    .section-body ul li { padding-left: 16px; position: relative; margin-bottom: 3px; }
     .section-body ul li::before {
-      content: '–';
-      position: absolute;
-      left: 0;
-      color: var(--blue);
-      font-weight: 600;
+      content: '–'; position: absolute; left: 0; color: var(--blue); font-weight: 600;
     }
 
     .highlight-box {
-      background: var(--mist);
-      border-left: 3px solid var(--blue);
-      border-radius: 0 8px 8px 0;
-      padding: 10px 14px;
-      margin-top: 6px;
-      font-size: 10pt;
-      color: var(--ink);
+      background: var(--mist); border-left: 3px solid var(--blue);
+      border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 6px;
+      font-size: 10pt; color: var(--ink);
     }
-
     .highlight-box strong { color: var(--blue); }
 
-    .divider {
-      border: none;
-      border-top: 1px solid var(--line);
-      margin: 22px 0;
-    }
+    .divider { border: none; border-top: 1px solid var(--line); margin: 22px 0; }
 
     /* ── Signatures ── */
     .signatures-section { margin-top: 32px; }
-
     .signatures-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 8pt;
-      font-weight: 700;
-      color: var(--blue);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 16px;
+      font-size: 8pt; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;
     }
-
-    .signatures-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-    }
+    .signatures-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 
     .sig-block {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 14px 14px 12px;
-      background: var(--surface);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      border: 1px solid var(--line); border-radius: 10px;
+      padding: 14px; background: var(--surface);
+      display: flex; flex-direction: column; gap: 10px;
     }
 
     .sig-role {
-      font-size: 7.5pt;
-      font-weight: 600;
-      color: var(--blue);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
+      font-size: 7.5pt; font-weight: 600; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 0.07em;
+    }
+    .sig-person {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 10pt; font-weight: 700; color: var(--ink); line-height: 1.3;
     }
 
-    .sig-name {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 10pt;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.3;
-    }
-
-    /* Name input for client */
-    .sig-name-input {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 10pt;
-      font-weight: 600;
-      color: var(--ink);
+    /* Firma escrita — fuente de escritura a mano */
+    .sig-typed {
+      font-family: 'Caveat', cursive;
+      font-size: 22px;
+      color: var(--ocean);
       border: none;
       border-bottom: 1.5px solid var(--line);
       background: transparent;
       width: 100%;
-      padding: 2px 0;
+      padding: 4px 0;
       outline: none;
-      line-height: 1.4;
+      line-height: 1.2;
     }
-
-    .sig-name-input::placeholder { color: var(--muted); font-weight: 400; }
-    .sig-name-input:focus { border-bottom-color: var(--blue); }
-
-    /* Canvas signature pad */
-    .sig-canvas-wrap {
-      position: relative;
-      background: var(--white);
-      border: 1px dashed var(--line);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .sig-canvas {
-      display: block;
-      width: 100%;
-      height: 72px;
-      cursor: crosshair;
-      touch-action: none;
-    }
-
-    .sig-canvas-hint {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8pt;
-      color: var(--muted);
-      pointer-events: none;
-      user-select: none;
-      transition: opacity 0.15s;
-    }
-
-    .sig-clear-btn {
-      align-self: flex-end;
-      font-size: 7.5pt;
-      color: var(--muted);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-      margin-top: -4px;
-    }
-
-    .sig-clear-btn:hover { color: var(--blue); }
+    .sig-typed::placeholder { color: var(--muted); font-size: 13px; font-family: 'Inter', sans-serif; }
+    .sig-typed:focus { border-bottom-color: var(--blue); }
+    .sig-typed[readonly] { cursor: default; border-bottom-color: transparent; }
 
     .sig-label {
-      font-size: 8pt;
-      color: var(--muted);
-      border-top: 1px solid var(--line);
-      padding-top: 6px;
+      font-size: 8pt; color: var(--muted);
+      border-top: 1px solid var(--line); padding-top: 6px;
     }
 
-    /* Date input */
     .sig-date-input {
       font-family: 'Inter', sans-serif;
-      font-size: 8.5pt;
-      color: var(--ink);
-      border: none;
-      border-bottom: 1.5px solid var(--line);
-      background: transparent;
-      padding: 1px 2px;
-      outline: none;
-      width: 130px;
-      cursor: pointer;
+      font-size: 8.5pt; color: var(--ink);
+      border: none; border-bottom: 1.5px solid var(--line);
+      background: transparent; padding: 1px 2px;
+      outline: none; width: 100%; cursor: pointer;
     }
-
     .sig-date-input:focus { border-bottom-color: var(--blue); }
 
     .sig-date-row {
-      font-size: 8.5pt;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      font-size: 8.5pt; color: var(--muted);
+      display: flex; flex-direction: column; gap: 4px;
     }
+
+    /* Checkbox de aceptación */
+    .accept-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 20px; padding: 14px 16px;
+      background: var(--mist); border-radius: 8px;
+      font-size: 9.5pt; color: var(--slate);
+    }
+    .accept-row input[type="checkbox"] {
+      width: 16px; height: 16px; flex-shrink: 0;
+      margin-top: 2px; accent-color: var(--blue); cursor: pointer;
+    }
+
+    /* Botón enviar */
+    .submit-wrap { margin-top: 20px; text-align: center; }
+
+    .btn-submit {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--white); background: var(--blue);
+      border: none; border-radius: 8px;
+      padding: 13px 36px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-submit:hover { background: var(--ocean); }
+    .btn-submit:disabled { background: var(--muted); cursor: not-allowed; }
+
+    .msg-envio { margin-top: 10px; font-size: 13px; min-height: 18px; }
 
     /* ── Footer ── */
     .footer {
-      margin-top: 28px;
-      padding-top: 12px;
+      margin-top: 28px; padding-top: 12px;
       border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
     }
-
     .footer-note { font-size: 7.5pt; color: var(--muted); }
+    .footer-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 8pt; font-weight: 700; color: var(--blue); }
 
-    .footer-brand {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 8pt;
-      font-weight: 700;
-      color: var(--blue);
-    }
-
-    /* ── Print ── */
     @media print {
       body { max-width: 100%; }
       .page { padding: 14mm 16mm 18mm; }
       @page { size: A4; margin: 0; }
-      .sig-clear-btn { display: none; }
-      .sig-canvas-hint { display: none; }
-      input { border-color: transparent !important; }
+      .submit-wrap, .accept-row { display: none; }
     }
   </style>
 </head>
@@ -402,10 +251,7 @@
 
   <!-- SECTION 2 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">2</span>
-      <span class="section-title">Objeto del Servicio</span>
-    </div>
+    <div class="section-header"><span class="section-number">2</span><span class="section-title">Objeto del Servicio</span></div>
     <div class="section-body">
       <p>Los Prestadores prestarán servicios de captación de leads y generación de oportunidades comerciales mediante estrategias digitales, incluyendo:</p>
       <ul>
@@ -420,10 +266,7 @@
 
   <!-- SECTION 3 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">3</span>
-      <span class="section-title">Descripción del Servicio</span>
-    </div>
+    <div class="section-header"><span class="section-number">3</span><span class="section-title">Descripción del Servicio</span></div>
     <div class="section-body">
       <ul>
         <li>Diseño y gestión de campañas publicitarias</li>
@@ -438,10 +281,7 @@
 
   <!-- SECTION 4 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">4</span>
-      <span class="section-title">Definición de Lead</span>
-    </div>
+    <div class="section-header"><span class="section-number">4</span><span class="section-title">Definición de Lead</span></div>
     <div class="section-body">
       <p>Se considerará <strong>"lead"</strong> el contacto de una persona física o jurídica que haya mostrado interés verificable mediante el envío voluntario de sus datos a través de los canales habilitados.</p>
       <p style="margin-top:8px;"><strong>No se considerarán leads:</strong></p>
@@ -456,10 +296,7 @@
 
   <!-- SECTION 5 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">5</span>
-      <span class="section-title">Presupuesto Publicitario</span>
-    </div>
+    <div class="section-header"><span class="section-number">5</span><span class="section-title">Presupuesto Publicitario</span></div>
     <div class="section-body">
       <p>El presupuesto destinado a campañas en Google Ads y Meta Ads será asumido íntegramente por El Cliente y no está incluido en la tarifa de Los Prestadores.</p>
     </div>
@@ -467,10 +304,7 @@
 
   <!-- SECTION 6 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">6</span>
-      <span class="section-title">Condiciones Económicas</span>
-    </div>
+    <div class="section-header"><span class="section-number">6</span><span class="section-title">Condiciones Económicas</span></div>
     <div class="section-body">
       <div class="highlight-box">
         <strong>Primer mes:</strong> Gratuito<br>
@@ -483,10 +317,7 @@
 
   <!-- SECTION 7 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">7</span>
-      <span class="section-title">Duración</span>
-    </div>
+    <div class="section-header"><span class="section-number">7</span><span class="section-title">Duración</span></div>
     <div class="section-body">
       <p>El presente acuerdo tendrá duración mensual y se renovará automáticamente salvo notificación de cancelación con al menos <strong>7 días de antelación</strong> al siguiente periodo.</p>
     </div>
@@ -494,10 +325,7 @@
 
   <!-- SECTION 8 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">8</span>
-      <span class="section-title">Obligaciones del Cliente</span>
-    </div>
+    <div class="section-header"><span class="section-number">8</span><span class="section-title">Obligaciones del Cliente</span></div>
     <div class="section-body">
       <ul>
         <li>Proporcionar accesos necesarios (Google Ads, Meta, web, etc.)</li>
@@ -510,10 +338,7 @@
 
   <!-- SECTION 9 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">9</span>
-      <span class="section-title">Obligaciones de Los Prestadores</span>
-    </div>
+    <div class="section-header"><span class="section-number">9</span><span class="section-title">Obligaciones de Los Prestadores</span></div>
     <div class="section-body">
       <ul>
         <li>Ejecutar el servicio de forma profesional</li>
@@ -526,10 +351,7 @@
 
   <!-- SECTION 10 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">10</span>
-      <span class="section-title">Propiedad de Cuentas y Datos</span>
-    </div>
+    <div class="section-header"><span class="section-number">10</span><span class="section-title">Propiedad de Cuentas y Datos</span></div>
     <div class="section-body">
       <p>Las cuentas publicitarias, datos y activos digitales serán propiedad del cliente. Los Prestadores tendrán acceso exclusivamente para la gestión del servicio.</p>
     </div>
@@ -537,10 +359,7 @@
 
   <!-- SECTION 11 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">11</span>
-      <span class="section-title">Confidencialidad</span>
-    </div>
+    <div class="section-header"><span class="section-number">11</span><span class="section-title">Confidencialidad</span></div>
     <div class="section-body">
       <p>Ambas partes se comprometen a mantener la confidencialidad de toda la información compartida durante la vigencia del acuerdo y con posterioridad a su finalización.</p>
     </div>
@@ -548,10 +367,7 @@
 
   <!-- SECTION 12 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">12</span>
-      <span class="section-title">Comunicación</span>
-    </div>
+    <div class="section-header"><span class="section-number">12</span><span class="section-title">Comunicación</span></div>
     <div class="section-body">
       <p>La comunicación se realizará a través de WhatsApp, email y llamadas. Se podrán realizar revisiones periódicas según acuerdo entre las partes.</p>
     </div>
@@ -559,10 +375,7 @@
 
   <!-- SECTION 13 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">13</span>
-      <span class="section-title">Cesión a Sociedad</span>
-    </div>
+    <div class="section-header"><span class="section-number">13</span><span class="section-title">Cesión a Sociedad</span></div>
     <div class="section-body">
       <p>Los Prestadores podrán ceder total o parcialmente la posición contractual a una sociedad mercantil vinculada, siempre que:</p>
       <ul>
@@ -575,10 +388,7 @@
 
   <!-- SECTION 14 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">14</span>
-      <span class="section-title">Naturaleza del Acuerdo</span>
-    </div>
+    <div class="section-header"><span class="section-number">14</span><span class="section-title">Naturaleza del Acuerdo</span></div>
     <div class="section-body">
       <p>Este acuerdo tiene carácter mercantil y no implica relación laboral entre las partes.</p>
     </div>
@@ -586,10 +396,7 @@
 
   <!-- SECTION 15 -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-number">15</span>
-      <span class="section-title">Terminación</span>
-    </div>
+    <div class="section-header"><span class="section-number">15</span><span class="section-title">Terminación</span></div>
     <div class="section-body">
       <p>El acuerdo podrá cancelarse con un preaviso mínimo de <strong>7 días</strong> antes del siguiente periodo mensual. No se realizarán devoluciones de importes ya abonados.</p>
     </div>
@@ -597,61 +404,64 @@
 
   <hr class="divider" />
 
-  <!-- SIGNATURES -->
+  <!-- SIGNATURES + FORM -->
   <div class="signatures-section">
     <div class="signatures-title">Aceptación y Firmas</div>
     <p style="font-size:9.5pt; color:var(--slate); margin-bottom:18px;">
-      La firma del presente documento implica la aceptación plena de todas sus condiciones.
+      Escribe tu nombre en el campo de firma para aceptar todas las condiciones del presente acuerdo.
     </p>
 
-    <div class="signatures-grid">
+    <form id="contrato-form">
+      <div class="signatures-grid">
 
-      <!-- Telmo -->
-      <div class="sig-block">
-        <div class="sig-role">Prestador</div>
-        <div class="sig-name">Telmo Gutiérrez</div>
-        <div class="sig-canvas-wrap">
-          <canvas class="sig-canvas" id="canvas-telmo"></canvas>
-          <div class="sig-canvas-hint" id="hint-telmo">Firmar aquí</div>
+        <!-- Telmo -->
+        <div class="sig-block">
+          <div class="sig-role">Prestador</div>
+          <div class="sig-person">Telmo Gutiérrez</div>
+          <input type="text" name="firma_telmo" class="sig-typed" value="Telmo Gutiérrez" readonly />
+          <div class="sig-label">Firma</div>
+          <div class="sig-date-row">
+            <span>Fecha</span>
+            <input type="date" name="fecha_telmo" class="sig-date-input" />
+          </div>
         </div>
-        <button class="sig-clear-btn" onclick="clearCanvas('canvas-telmo','hint-telmo')">× Limpiar</button>
-        <div class="sig-label">Firma</div>
-        <div class="sig-date-row">
-          Fecha: <input type="date" id="fecha-telmo" class="sig-date-input" />
+
+        <!-- Manuel -->
+        <div class="sig-block">
+          <div class="sig-role">Prestador</div>
+          <div class="sig-person">Manuel Sánchez<br>de la Madrid</div>
+          <input type="text" name="firma_manuel" class="sig-typed" value="Manuel Sánchez de la Madrid" readonly />
+          <div class="sig-label">Firma</div>
+          <div class="sig-date-row">
+            <span>Fecha</span>
+            <input type="date" name="fecha_manuel" class="sig-date-input" />
+          </div>
         </div>
+
+        <!-- Cliente -->
+        <div class="sig-block">
+          <div class="sig-role">Cliente</div>
+          <input type="text" name="nombre_cliente" class="sig-typed" placeholder="Escribe tu nombre completo" required style="font-size:14px;" />
+          <div class="sig-label">Nombre y Firma</div>
+          <div class="sig-date-row">
+            <span>Fecha</span>
+            <input type="date" name="fecha_cliente" class="sig-date-input" required />
+          </div>
+        </div>
+
       </div>
 
-      <!-- Manuel -->
-      <div class="sig-block">
-        <div class="sig-role">Prestador</div>
-        <div class="sig-name">Manuel Sánchez<br>de la Madrid</div>
-        <div class="sig-canvas-wrap">
-          <canvas class="sig-canvas" id="canvas-manuel"></canvas>
-          <div class="sig-canvas-hint" id="hint-manuel">Firmar aquí</div>
-        </div>
-        <button class="sig-clear-btn" onclick="clearCanvas('canvas-manuel','hint-manuel')">× Limpiar</button>
-        <div class="sig-label">Firma</div>
-        <div class="sig-date-row">
-          Fecha: <input type="date" id="fecha-manuel" class="sig-date-input" />
-        </div>
-      </div>
+      <!-- Aceptación -->
+      <label class="accept-row">
+        <input type="checkbox" name="acepta_condiciones" value="Sí" required />
+        <span>He leído y acepto todas las condiciones del presente Acuerdo de Prestación de Servicios de Marketing Digital y Software.</span>
+      </label>
 
-      <!-- Cliente -->
-      <div class="sig-block">
-        <div class="sig-role">Cliente</div>
-        <input type="text" id="input-cliente-nombre" class="sig-name-input" placeholder="Nombre y cargo" />
-        <div class="sig-canvas-wrap">
-          <canvas class="sig-canvas" id="canvas-cliente"></canvas>
-          <div class="sig-canvas-hint" id="hint-cliente">Firmar aquí</div>
-        </div>
-        <button class="sig-clear-btn" onclick="clearCanvas('canvas-cliente','hint-cliente')">× Limpiar</button>
-        <div class="sig-label">Firma</div>
-        <div class="sig-date-row">
-          Fecha: <input type="date" id="fecha-cliente" class="sig-date-input" />
-        </div>
+      <div class="submit-wrap">
+        <button type="submit" class="btn-submit" id="btn-enviar">Firmar y enviar contrato</button>
+        <div class="msg-envio" id="msg-envio"></div>
       </div>
-
-    </div>
+    </form>
   </div>
 
   <!-- FOOTER -->
@@ -660,149 +470,41 @@
     <span class="footer-brand">Navigy</span>
   </footer>
 
-  <!-- SUBMIT -->
-  <div id="submit-wrap" style="margin-top:24px;text-align:center;">
-    <button id="btn-enviar" onclick="enviarContrato()" style="
-      font-family:'Plus Jakarta Sans',sans-serif;
-      font-size:14px;font-weight:700;
-      color:#fff;background:#1769C2;
-      border:none;border-radius:8px;
-      padding:13px 32px;cursor:pointer;
-      transition:background 0.15s;
-    ">Enviar contrato firmado</button>
-    <div id="msg-envio" style="margin-top:10px;font-size:13px;color:#7C869A;min-height:18px;"></div>
-  </div>
-
 </div>
 
 <script>
-  function initCanvas(id, hintId) {
-    const canvas = document.getElementById(id);
-    const hint   = document.getElementById(hintId);
-    const ctx    = canvas.getContext('2d');
-    let drawing  = false;
-    let hasDrawn = false;
-
-    function resize() {
-      const rect = canvas.getBoundingClientRect();
-      const dpr  = window.devicePixelRatio || 1;
-      const saved = canvas.toDataURL();
-      canvas.width  = rect.width  * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-      ctx.strokeStyle = '#0D0F14';
-      ctx.lineWidth   = 1.8;
-      ctx.lineCap     = 'round';
-      ctx.lineJoin    = 'round';
-      if (hasDrawn) {
-        const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
-        img.src = saved;
-      }
-    }
-
-    function pos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const src  = e.touches ? e.touches[0] : e;
-      return { x: src.clientX - rect.left, y: src.clientY - rect.top };
-    }
-
-    canvas.addEventListener('mousedown',  e => { drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); });
-    canvas.addEventListener('mousemove',  e => { if (!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if (!hasDrawn) { hasDrawn = true; hint.style.opacity = '0'; } });
-    canvas.addEventListener('mouseup',    () => { drawing = false; });
-    canvas.addEventListener('mouseleave', () => { drawing = false; });
-
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); }, { passive: false });
-    canvas.addEventListener('touchmove',  e => { e.preventDefault(); if (!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if (!hasDrawn) { hasDrawn = true; hint.style.opacity = '0'; } }, { passive: false });
-    canvas.addEventListener('touchend',   e => { e.preventDefault(); drawing = false; }, { passive: false });
-
-    window.addEventListener('resize', resize);
-    resize();
-
-    canvas._clearFn = () => {
-      const rect = canvas.getBoundingClientRect();
-      ctx.clearRect(0, 0, rect.width, rect.height);
-      hasDrawn = false;
-      hint.style.opacity = '1';
-    };
-  }
-
-  function clearCanvas(id, hintId) {
-    document.getElementById(id)._clearFn();
-  }
-
-  initCanvas('canvas-telmo',   'hint-telmo');
-  initCanvas('canvas-manuel',  'hint-manuel');
-  initCanvas('canvas-cliente', 'hint-cliente');
-
-  async function enviarContrato() {
-    const btn  = document.getElementById('btn-enviar');
-    const msg  = document.getElementById('msg-envio');
-    const wrap = document.getElementById('submit-wrap');
+  document.getElementById('contrato-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-enviar');
+    const msg = document.getElementById('msg-envio');
 
     btn.disabled = true;
-    btn.style.background = '#4A8FD9';
-    btn.textContent = 'Generando PDF…';
+    btn.textContent = 'Enviando…';
     msg.textContent = '';
 
     try {
-      // Ocultar botón para que no salga en el PDF
-      wrap.style.display = 'none';
-
-      const page = document.querySelector('.page');
-      const canvas = await html2canvas(page, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        scrollY: -window.scrollY,
-        windowWidth: page.scrollWidth,
-        windowHeight: page.scrollHeight,
+      const res = await fetch('https://formspree.io/f/xojrqjbw', {
+        method: 'POST',
+        body: new FormData(this),
+        headers: { 'Accept': 'application/json' }
       });
 
-      wrap.style.display = 'block';
-
-      // Generar PDF multipágina
-      const { jsPDF } = window.jspdf;
-      const pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const pdfW  = pdf.internal.pageSize.getWidth();
-      const pdfH  = pdf.internal.pageSize.getHeight();
-      const imgW  = pdfW;
-      const imgH  = (canvas.height * pdfW) / canvas.width;
-      const imgData = canvas.toDataURL('image/jpeg', 0.85);
-
-      pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
-      let remaining = imgH - pdfH;
-      while (remaining > 0) {
-        pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, -(imgH - remaining), imgW, imgH);
-        remaining -= pdfH;
+      if (res.ok) {
+        btn.textContent = '✓ Contrato enviado';
+        btn.style.background = '#1DAA72';
+        msg.style.color = '#1DAA72';
+        msg.textContent = 'El contrato ha sido firmado y enviado correctamente.';
+      } else {
+        throw new Error();
       }
-
-      btn.textContent = 'Enviando…';
-
-      const clienteName   = document.getElementById('input-cliente-nombre').value || 'Cliente';
-      const fechaCliente  = document.getElementById('fecha-cliente').value;
-
-      await emailjs.send('service_huh7zrb', 'template_czeyubo', {
-        cliente_name:   clienteName,
-        fecha_cliente:  fechaCliente,
-        pdf_attachment: pdf.output('datauristring'),
-      });
-
-      btn.textContent = '✓ Contrato enviado';
-      btn.style.background = '#1DAA72';
-      msg.style.color = '#1DAA72';
-      msg.textContent = 'El contrato firmado ha sido enviado a tu correo.';
-    } catch (err) {
-      console.error(err);
-      wrap.style.display = 'block';
+    } catch {
       btn.disabled = false;
-      btn.style.background = '#E03B3B';
       btn.textContent = 'Error — volver a intentar';
+      btn.style.background = '#E03B3B';
       msg.style.color = '#E03B3B';
       msg.textContent = 'No se pudo enviar. Comprueba la conexión e inténtalo de nuevo.';
     }
-  }
+  });
 </script>
 </body>
 </html>
